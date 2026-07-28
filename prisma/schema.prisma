@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// 'doctor' and 'user' is a Prisma relation field used to navigate to the related User and Doctor records
+// The [] means a list/many., meaning the "many" side of a one-to-many relationship.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  RECEPTIONIST
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String  @id @default(uuid())
+  employeeId   String  @unique
+  firstName    String
+  lastName     String
+  passwordHash String
+  role         Role
+  email        String? @unique
+  isActive     Boolean @default(true)
+
+  doctor Doctor?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Doctor {
+  id             String  @id @default(uuid())
+  specialization String
+  licenseNumber  String  @unique
+  isAvailable    Boolean @default(true)
+
+  appointments Appointment[]
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Patient {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  phoneNumber String
+  dateOfBirth DateTime
+
+  appointments Appointment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  doctorId    String
+  patientId   String
+  scheduledAt DateTime
+  status      AppointmentStatus @default(SCHEDULED)
+  reason      String
+
+  doctor  Doctor  @relation(fields: [doctorId], references: [id])
+  patient Patient @relation(fields: [patientId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
