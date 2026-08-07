@@ -1,5 +1,6 @@
 import express from "express";
 import userRouter from "./routes/user.route.js";
+import authRouter from "./routes/auth.route.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 // express creates the application
 const app = express();
@@ -7,12 +8,13 @@ const app = express();
 app.use(express.json()); // it registers express.json() middleware in express
 
 app.use("/api/users", userRouter); // can attach many endpoints through a router
+app.use("/api/auth", authRouter);
 
 // app.get registers one get route (endpoint)
 app.get("/", (req, res) => {
   res.send("API Started");
 });
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 export default app;
