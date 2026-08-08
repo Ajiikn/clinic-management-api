@@ -8,7 +8,7 @@ export async function createUser(data: createUserData) {
   const existingUser = await userRepository.findByEmployeeId(data.employeeId);
 
   if (existingUser) {
-    throw new ConflictError("Employee ID already exists");
+    throw new ConflictError("Employee ID Already Exists");
   }
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
